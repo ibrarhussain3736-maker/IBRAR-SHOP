@@ -292,7 +292,7 @@ function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch {}
 /* ============ cloud sync (Firebase Realtime Database, plain REST) ============ */
 /* Paste your two Firebase values between the quotes (see FIREBASE-SETUP.md).
    While they are empty the shop works exactly as before: data stays on this device only. */
-const FIREBASE = { apiKey: "", databaseURL: "" };
+const FIREBASE = { apiKey: "AIzaSyCkBT2BENJDURfiCH-Sn4dcI_RGwViJnDs", databaseURL: "https://ibrar-shop-27306-default-rtdb.firebaseio.com" };
 const cloudOn = !!(FIREBASE.apiKey && FIREBASE.databaseURL);
 const cloud = { token: "", refresh: "", exp: 0, last: "", empty: false };
 const dbUrl = p => FIREBASE.databaseURL.replace(/\/+$/, "") + "/" + p + ".json";
