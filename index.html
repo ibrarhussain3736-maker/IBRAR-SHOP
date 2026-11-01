@@ -144,7 +144,7 @@ dialog::backdrop{background:rgba(20,8,40,.62)}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .stat{background:var(--card);border:2px solid var(--edge);border-radius:12px;padding:10px;text-align:center}
 .stat b{display:block;font-size:1.3rem}
-.toast{position:fixed;left:50%;bottom:84px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;z-index:100;max-width:90vw;font-weight:700}
+.toast{position:fixed;top:auto;right:auto;margin:0;border:0;left:50%;bottom:84px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;z-index:100;max-width:90vw;font-weight:700}
 .toast[hidden]{display:none}
 footer{border-top:2px solid var(--edge);padding:18px 0 40px;color:var(--muted);font-size:.9rem;margin-top:30px}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
@@ -175,7 +175,7 @@ td,th{padding:6px;border-bottom:1px solid var(--line);text-align:start;vertical-
 </main>
 <footer><div class="wrap"><span id="foot"></span> · <a href="#" id="ownerLink"></a></div></footer>
 <button class="cartbar" id="cartBar" hidden></button>
-<div id="toast" class="toast" hidden role="status"></div>
+<div id="toast" class="toast" popover="manual" hidden role="status"></div>
 
 <script>
 "use strict";
@@ -201,7 +201,7 @@ const T = {
     place:"Place order", needName:"Please enter your name.", needPhone:"Please enter a valid phone number.", needAddr:"Please enter your delivery address.", needTxn:"Please enter the transaction ID.",
     placed:"Order placed!", orderId:"Order number", copyText:"Copy order text", copied:"Copied", viewOrders:"Track my order", noOrders:"No orders yet.", paid:"Paid", unpaid:"Payment pending",
     s_received:"Received", s_preparing:"Preparing", s_ready:"Ready", s_delivered:"Done", s_cancelled:"Cancelled", ready_delivery:"On the way", ready_pickup:"Ready",
-    pin:"Owner PIN", enter:"Enter", wrongPin:"Wrong PIN.", ownerPanel:"Owner panel", tabOrders:"Orders", tabMenu:"Menu", tabOffers:"Offers", tabSettings:"Settings", tabBackup:"Backup",
+    pin:"Owner PIN", enter:"Enter", wrongPin:"Wrong PIN.", emailL:"Owner email", passL:"Password", wrongLogin:"Wrong email or password, or no internet.", cloudSaved:"Saved online ✓", cloudFail:"Could not save online. Check internet and log in again.", cloudNote:"Changes you save here appear on every customer's phone.", ownerPanel:"Owner panel", tabOrders:"Orders", tabMenu:"Menu", tabOffers:"Offers", tabSettings:"Settings", tabBackup:"Backup",
     today:"Today", revenue:"Revenue", ordersN:"Orders", itemName:"Name (English)", itemNameUr:"Name (Urdu, optional)", category:"Category", price:"Price (Rs)", emoji:"Emoji", desc:"Description",
     opts:"Options (one per line, e.g. Large=200)", save:"Save", newItem:"New item", edit:"Edit", del:"Delete", availToggle:"Available", confirmDel:"Delete this? This cannot be undone.",
     code:"Code", type:"Type", percent:"Percent %", flat:"Flat Rs", value:"Value", minOrder:"Minimum order", addPromo:"Add code", bannerEn:"Home banner (English)", bannerUr:"Home banner (Urdu)",
@@ -225,7 +225,7 @@ const T = {
     place:"آرڈر دیں", needName:"براہِ کرم اپنا نام لکھیں۔", needPhone:"براہِ کرم درست فون نمبر لکھیں۔", needAddr:"براہِ کرم ڈیلیوری کا پتہ لکھیں۔", needTxn:"براہِ کرم ٹرانزیکشن آئی ڈی لکھیں۔",
     placed:"آرڈر مل گیا!", orderId:"آرڈر نمبر", copyText:"آرڈر کا متن کاپی کریں", copied:"کاپی ہو گیا", viewOrders:"آرڈر ٹریک کریں", noOrders:"ابھی کوئی آرڈر نہیں۔", paid:"ادا شدہ", unpaid:"ادائیگی باقی",
     s_received:"موصول", s_preparing:"تیار ہو رہا ہے", s_ready:"تیار", s_delivered:"مکمل", s_cancelled:"منسوخ", ready_delivery:"راستے میں", ready_pickup:"تیار",
-    pin:"مالک کا پن", enter:"داخل ہوں", wrongPin:"پن غلط ہے۔", ownerPanel:"مالک کا پینل", tabOrders:"آرڈر", tabMenu:"مینو", tabOffers:"آفرز", tabSettings:"سیٹنگز", tabBackup:"بیک اپ",
+    pin:"مالک کا پن", enter:"داخل ہوں", wrongPin:"پن غلط ہے۔", emailL:"مالک کی ای میل", passL:"پاس ورڈ", wrongLogin:"ای میل یا پاس ورڈ غلط ہے، یا انٹرنیٹ نہیں۔", cloudSaved:"آن لائن محفوظ ہو گیا ✓", cloudFail:"آن لائن محفوظ نہیں ہوا۔ انٹرنیٹ چیک کریں اور دوبارہ لاگ اِن کریں۔", cloudNote:"یہاں محفوظ کی گئی تبدیلیاں ہر گاہک کے فون پر نظر آئیں گی۔", ownerPanel:"مالک کا پینل", tabOrders:"آرڈر", tabMenu:"مینو", tabOffers:"آفرز", tabSettings:"سیٹنگز", tabBackup:"بیک اپ",
     today:"آج", revenue:"آمدنی", ordersN:"آرڈر", itemName:"نام (انگریزی)", itemNameUr:"نام (اردو، اختیاری)", category:"زمرہ", price:"قیمت (روپے)", emoji:"ایموجی", desc:"تفصیل",
     opts:"آپشنز (ہر سطر میں ایک، مثلاً Large=200)", save:"محفوظ کریں", newItem:"نئی آئٹم", edit:"ترمیم", del:"حذف", availToggle:"دستیاب", confirmDel:"کیا حذف کریں؟ یہ واپس نہیں ہو سکتا۔",
     code:"کوڈ", type:"قسم", percent:"فیصد %", flat:"مقررہ روپے", value:"قدر", minOrder:"کم از کم آرڈر", addPromo:"کوڈ شامل کریں", bannerEn:"ہوم بینر (انگریزی)", bannerUr:"ہوم بینر (اردو)",
@@ -287,7 +287,74 @@ const S = Object.assign({
 }, (() => { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch { return {}; } })());
 S.settings = Object.assign({}, D.settings, S.settings);
 let ui = { cat: "all", q: "", sort: "def", owner: false, tab: "orders", edit: null, promo: null, promoMsg: "", ck: null, lastOrder: null, ownerErr: "" };
-function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch {} }
+function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch {} cloudPush(); }
+
+/* ============ cloud sync (Firebase Realtime Database, plain REST) ============ */
+/* Paste your two Firebase values between the quotes (see FIREBASE-SETUP.md).
+   While they are empty the shop works exactly as before: data stays on this device only. */
+const FIREBASE = { apiKey: "", databaseURL: "" };
+const cloudOn = !!(FIREBASE.apiKey && FIREBASE.databaseURL);
+const cloud = { token: "", refresh: "", exp: 0, last: "", empty: false };
+const dbUrl = p => FIREBASE.databaseURL.replace(/\/+$/, "") + "/" + p + ".json";
+const sharedData = () => ({ cats: S.cats, menu: S.menu, promos: S.promos, settings: S.settings });
+const asArr = v => Array.isArray(v) ? v.filter(Boolean) : (v && typeof v === "object" ? Object.values(v) : []);
+function tfetch(url, opt = {}) {
+  const c = new AbortController(), id = setTimeout(() => c.abort(), 8000);
+  return fetch(url, Object.assign({}, opt, { signal: c.signal })).finally(() => clearTimeout(id));
+}
+/* customers + owner: download the shared menu */
+async function cloudPull() {
+  if (!cloudOn) return;
+  try {
+    const r = await tfetch(dbUrl("shop") + "?t=" + Date.now(), { cache: "no-store" });
+    if (!r.ok) return;
+    const o = await r.json();
+    cloud.empty = !o || typeof o !== "object";
+    if (cloud.empty) return;
+    const sig = JSON.stringify(o);
+    if (sig === cloud.last) return;
+    cloud.last = sig;
+    S.menu = asArr(o.menu).map(m => Object.assign({ avail: true }, m, { opts: asArr(m.opts) }));
+    S.cats = asArr(o.cats);
+    S.promos = asArr(o.promos);
+    S.settings = Object.assign({}, D.settings, o.settings || {});
+    S.cart = S.cart.filter(l => item(l.id));
+    try { localStorage.setItem(KEY, JSON.stringify(S)); } catch {}
+    refreshAll();
+  } catch {}
+}
+/* owner only: log in with the Firebase email + password */
+async function cloudSignIn(email, pass) {
+  const r = await tfetch("https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=" + encodeURIComponent(FIREBASE.apiKey),
+    { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email, password: pass, returnSecureToken: true }) });
+  const j = await r.json();
+  if (!r.ok || !j.idToken) throw new Error("login");
+  cloud.token = j.idToken; cloud.refresh = j.refreshToken; cloud.exp = Date.now() + (Number(j.expiresIn) - 60) * 1000;
+}
+async function cloudToken() {
+  if (cloud.token && Date.now() < cloud.exp) return cloud.token;
+  const r = await tfetch("https://securetoken.googleapis.com/v1/token?key=" + encodeURIComponent(FIREBASE.apiKey),
+    { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body: "grant_type=refresh_token&refresh_token=" + encodeURIComponent(cloud.refresh) });
+  const j = await r.json();
+  if (!r.ok || !j.id_token) throw new Error("refresh");
+  cloud.token = j.id_token; cloud.refresh = j.refresh_token; cloud.exp = Date.now() + (Number(j.expires_in) - 60) * 1000;
+  return cloud.token;
+}
+/* owner only: upload the menu after every save */
+let pushTimer;
+function cloudPush() {
+  if (!cloudOn || !cloud.token) return;
+  clearTimeout(pushTimer);
+  pushTimer = setTimeout(async () => {
+    const body = JSON.stringify(sharedData());
+    if (body === cloud.sent) return;
+    try {
+      const tk = await cloudToken();
+      const r = await tfetch(dbUrl("shop") + "?auth=" + encodeURIComponent(tk), { method: "PUT", body });
+      if (r.ok) { cloud.sent = body; cloud.last = ""; toast(t("cloudSaved")); } else toast(t("cloudFail"));
+    } catch { toast(t("cloudFail")); }
+  }, 400);
+}
 const t = (k, ...a) => { let s = (T[S.lang] && T[S.lang][k]) ?? T.en[k] ?? k; a.forEach((v, i) => { s = s.replace("%" + (i + 1), v).replace("%s", v); }); return s; };
 const nm = x => (S.lang === "ur" && x.name_ur) ? x.name_ur : x.name;
 const catName = c => (S.lang === "ur" && c.ur) ? c.ur : c.en;
@@ -322,7 +389,15 @@ function show(id, render, wide) {
 function refresh(id) { const d = document.getElementById(id); if (d && d.open && openRender[id]) { const sc = d.querySelector(".dlg-b"); const top = sc ? sc.scrollTop : 0; d.innerHTML = openRender[id](); const n = d.querySelector(".dlg-b"); if (n) n.scrollTop = top; } }
 function closeDlg(id) { const d = document.getElementById(id); if (d && d.open) d.close(); }
 function head(title, id) { return `<div class="dlg-h"><h2>${esc(title)}</h2><button class="btn small" data-act="close" data-id="${id}" aria-label="${esc(t("close"))}">✕</button></div>`; }
-function toast(msg) { const el = $("#toast"); el.textContent = msg; el.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => { el.hidden = true; }, 2200); }
+function toast(msg) {
+  const el = $("#toast"); el.textContent = msg; el.hidden = false;
+  /* popover puts the message in the top layer so it shows ABOVE open dialogs (owner panel) */
+  try { if (el.matches(":popover-open")) el.hidePopover(); el.showPopover(); } catch {}
+  clearTimeout(toast.t);
+  toast.t = setTimeout(() => { el.hidden = true; try { el.hidePopover(); } catch {} }, 2200);
+}
+/* ask the browser not to clear saved menu/settings when it is low on space */
+try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch {}
 function refreshAll() { render(); ["dCart", "dItem", "dCheckout", "dOrders", "dOwner", "dDone"].forEach(refresh); }
 
 /* ============ main page ============ */
@@ -507,6 +582,9 @@ function renderOrders() { return `${head(t("orders"), "dOrders")}<div class="dlg
 /* ============ owner panel ============ */
 function openOwner() { show("dOwner", renderOwner, true); }
 function renderOwner() {
+  if (!ui.owner && cloudOn) return `${head(t("owner"), "dOwner")}<div class="dlg-b"><div class="field"><label for="cEmail">${esc(t("emailL"))}</label><input id="cEmail" type="email" autocomplete="username" autocapitalize="none"></div>
+    <div class="field"><label for="cPass">${esc(t("passL"))}</label><input id="cPass" type="password" autocomplete="current-password"></div>
+    ${ui.ownerErr ? `<div class="err" role="alert">${esc(ui.ownerErr)}</div>` : ""}<button class="btn primary" data-act="cloudlogin">${esc(t("enter"))}</button><p class="note">${esc(t("cloudNote"))}</p></div>`;
   if (!ui.owner) return `${head(t("owner"), "dOwner")}<div class="dlg-b"><div class="field"><label for="pinIn">${esc(t("pin"))}</label><input id="pinIn" type="password" inputmode="numeric" autocomplete="off" maxlength="12"></div>
     ${ui.ownerErr ? `<div class="err" role="alert">${esc(ui.ownerErr)}</div>` : ""}<button class="btn primary" data-act="pinok">${esc(t("enter"))}</button><p class="note">${esc(t("pinNote"))}</p></div>`;
   const tabs = [["orders", "tabOrders"], ["menu", "tabMenu"], ["offers", "tabOffers"], ["settings", "tabSettings"], ["backup", "tabBackup"]];
@@ -548,7 +626,7 @@ function ownerSettings() {
   return `${f("stName", t("shopName"), s.name)}${f("stWa", t("waNum"), s.wa, "text", "923001234567")}${f("stEp", t("epNum"), s.ep)}${f("stJc", t("jcNum"), s.jc)}${f("stAcc", t("accTitle"), s.acc)}
     <div class="two">${f("stFee", t("delFee"), s.fee, "number")}${f("stFree", t("freeAbove"), s.freeOver, "number")}</div>
     <label style="display:flex;gap:8px;align-items:center;margin:8px 0"><input type="checkbox" id="stOpen" style="width:auto;min-height:0" ${s.open ? "checked" : ""}> ${esc(t("open"))}</label>
-    ${f("stPin", t("newPin"), "", "password")}<p class="note">${esc(t("pinNote"))}</p><button class="btn primary" data-act="savesettings">${esc(t("save"))}</button>`;
+    ${cloudOn ? `<p class="note">${esc(t("cloudNote"))}</p>` : `${f("stPin", t("newPin"), "", "password")}<p class="note">${esc(t("pinNote"))}</p>`}<button class="btn primary" data-act="savesettings">${esc(t("save"))}</button>`;
 }
 function ownerBackup() {
   return `<div style="display:flex;flex-direction:column;gap:8px;align-items:flex-start"><button class="btn" data-act="exportjson">${esc(t("exportJson"))}</button>
@@ -594,7 +672,14 @@ document.addEventListener("click", e => {
     case "showorders": closeDlg("dDone"); show("dOrders", renderOrders); break;
     case "pinok": { const v = ($("#pinIn").value || ""); if (v === S.pin) { ui.owner = true; ui.ownerErr = ""; } else ui.ownerErr = t("wrongPin"); refresh("dOwner"); break; }
     case "otab": ui.tab = id; ui.edit = null; refresh("dOwner"); break;
-    case "ologout": ui.owner = false; ui.edit = null; refresh("dOwner"); break;
+    case "cloudlogin": {
+      const em = ($("#cEmail").value || "").trim(), pw = $("#cPass").value || "";
+      cloudSignIn(em, pw)
+        .then(() => cloudPull())
+        .then(() => { ui.owner = true; ui.ownerErr = ""; if (cloud.empty) { cloud.sent = ""; cloudPush(); } refresh("dOwner"); })
+        .catch(() => { ui.owner = false; ui.ownerErr = t("wrongLogin"); refresh("dOwner"); });
+      break; }
+    case "ologout": ui.owner = false; ui.edit = null; cloud.token = ""; cloud.refresh = ""; refresh("dOwner"); break;
     case "ostatus": break;
     case "odel": if (confirm(t("confirmDel"))) { S.orders = S.orders.filter(o => o.id !== id); save(); refresh("dOwner"); } break;
     case "newitem": ui.edit = { id: "", name: "", name_ur: "", cat: S.cats[0] ? S.cats[0].id : "", price: "", emoji: "🍽️", desc: "", optsText: "", spicy: false, veg: false }; ui.editErr = ""; refresh("dOwner"); break;
@@ -618,7 +703,7 @@ document.addEventListener("click", e => {
     case "savesettings": {
       const s = S.settings; s.name = $("#stName").value.trim() || s.name; s.wa = $("#stWa").value.replace(/\D/g, ""); s.ep = $("#stEp").value.trim(); s.jc = $("#stJc").value.trim(); s.acc = $("#stAcc").value.trim();
       s.fee = Math.max(0, Number($("#stFee").value) || 0); s.freeOver = Math.max(0, Number($("#stFree").value) || 0); s.open = $("#stOpen").checked;
-      const np = $("#stPin").value; if (np) { if (np.length >= 4) S.pin = np; else { toast(t("newPin")); break; } }
+      const np = $("#stPin") ? $("#stPin").value : ""; if (np) { if (np.length >= 4) S.pin = np; else { toast(t("newPin")); break; } }
       save(); render(); toast(t("saved")); break; }
     case "exportjson": download("food-shop-backup.json", JSON.stringify({ cats: S.cats, menu: S.menu, promos: S.promos, settings: S.settings, orders: S.orders }, null, 2), "application/json"); break;
     case "exportcsv": {
@@ -653,8 +738,16 @@ $("#btnOrders").addEventListener("click", () => show("dOrders", renderOrders));
 $("#btnCart").addEventListener("click", openCart);
 $("#cartBar").addEventListener("click", openCart);
 $("#ownerLink").addEventListener("click", e => { e.preventDefault(); openOwner(); });
-document.addEventListener("keydown", e => { if (e.key === "Enter" && e.target.id === "pinIn") { e.preventDefault(); const b = document.querySelector('[data-act="pinok"]'); if (b) b.click(); } });
-render();
+document.addEventListener("keydown", e => { if (e.key === "Enter" && (e.target.id === "pinIn" || e.target.id === "cPass")) { e.preventDefault(); const b = document.querySelector('[data-act="pinok"],[data-act="cloudlogin"]'); if (b) b.click(); } });
+
+/* start: show the cached menu at once; first-time visitors wait for the online menu so they never see demo items */
+(function start() {
+  let cached = false; try { cached = !!localStorage.getItem(KEY); } catch {}
+  if (!cloudOn) { render(); return; }
+  if (cached) { render(); cloudPull(); } else { cloudPull().finally(render); }
+  setInterval(() => { if (!ui.owner && !document.hidden) cloudPull(); }, 30000);
+  document.addEventListener("visibilitychange", () => { if (!document.hidden && !ui.owner) cloudPull(); });
+})();
 </script>
 </body>
 </html>
