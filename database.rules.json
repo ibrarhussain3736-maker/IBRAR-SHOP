@@ -1,0 +1,1 @@
+{"rules":{"shop":{".read":true,".write":"auth != null && auth.token.email === 'ibrarhussain3736@gmail.com'"}}}
