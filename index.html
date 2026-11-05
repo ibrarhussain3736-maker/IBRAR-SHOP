@@ -117,6 +117,9 @@ dialog::backdrop{background:rgba(20,8,40,.62)}
 .dlg-b{padding:14px 16px 18px;overflow:auto;max-height:calc(92vh - 70px)}
 .line{display:flex;gap:10px;align-items:center;padding:10px 0;border-bottom:2px dotted var(--edge)}
 .line .ic{font-size:1.8rem}
+.pimg{width:100%;height:100%;object-fit:cover;display:block;border-radius:50%}
+.line .ic .pimg{width:44px;height:44px}
+.pic,.pick .pe{overflow:hidden}
 .line .grow{flex:1;min-width:0}
 .qty{display:inline-flex;align-items:center;gap:8px}
 .qty button{width:38px;height:38px;border-radius:10px;border:2px solid var(--edge);background:var(--card);font-size:1.1rem;font-weight:800}
@@ -144,7 +147,7 @@ dialog::backdrop{background:rgba(20,8,40,.62)}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .stat{background:var(--card);border:2px solid var(--edge);border-radius:12px;padding:10px;text-align:center}
 .stat b{display:block;font-size:1.3rem}
-.toast{position:fixed;left:50%;bottom:84px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;z-index:100;max-width:90vw;font-weight:700}
+.toast{position:fixed;top:auto;right:auto;margin:0;border:0;left:50%;bottom:84px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;z-index:100;max-width:90vw;font-weight:700}
 .toast[hidden]{display:none}
 footer{border-top:2px solid var(--edge);padding:18px 0 40px;color:var(--muted);font-size:.9rem;margin-top:30px}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
@@ -175,7 +178,7 @@ td,th{padding:6px;border-bottom:1px solid var(--line);text-align:start;vertical-
 </main>
 <footer><div class="wrap"><span id="foot"></span> · <a href="#" id="ownerLink"></a></div></footer>
 <button class="cartbar" id="cartBar" hidden></button>
-<div id="toast" class="toast" hidden role="status"></div>
+<div id="toast" class="toast" popover="manual" hidden role="status"></div>
 
 <script>
 "use strict";
@@ -201,7 +204,7 @@ const T = {
     place:"Place order", needName:"Please enter your name.", needPhone:"Please enter a valid phone number.", needAddr:"Please enter your delivery address.", needTxn:"Please enter the transaction ID.",
     placed:"Order placed!", orderId:"Order number", copyText:"Copy order text", copied:"Copied", viewOrders:"Track my order", noOrders:"No orders yet.", paid:"Paid", unpaid:"Payment pending",
     s_received:"Received", s_preparing:"Preparing", s_ready:"Ready", s_delivered:"Done", s_cancelled:"Cancelled", ready_delivery:"On the way", ready_pickup:"Ready",
-    pin:"Owner PIN", enter:"Enter", wrongPin:"Wrong PIN.", ownerPanel:"Owner panel", tabOrders:"Orders", tabMenu:"Menu", tabOffers:"Offers", tabSettings:"Settings", tabBackup:"Backup",
+    pin:"Owner PIN", enter:"Enter", wrongPin:"Wrong PIN.", emailL:"Owner email", passL:"Password", wrongLogin:"Wrong email or password, or no internet.", cloudSaved:"Saved online ✓", cloudFail:"Could not save online. Check internet and log in again.", cloudNote:"Changes you save here appear on every customer's phone.", ownerPanel:"Owner panel", tabOrders:"Orders", tabMenu:"Menu", tabOffers:"Offers", tabSettings:"Settings", tabBackup:"Backup",
     today:"Today", revenue:"Revenue", ordersN:"Orders", itemName:"Name (English)", itemNameUr:"Name (Urdu, optional)", category:"Category", price:"Price (Rs)", emoji:"Emoji", desc:"Description",
     opts:"Options (one per line, e.g. Large=200)", save:"Save", newItem:"New item", edit:"Edit", del:"Delete", availToggle:"Available", confirmDel:"Delete this? This cannot be undone.",
     code:"Code", type:"Type", percent:"Percent %", flat:"Flat Rs", value:"Value", minOrder:"Minimum order", addPromo:"Add code", bannerEn:"Home banner (English)", bannerUr:"Home banner (Urdu)",
@@ -210,7 +213,9 @@ const T = {
     saved:"Saved", exportJson:"Download backup", importJson:"Restore backup", exportCsv:"Download orders (CSV)", reset:"Reset to demo data", logout:"Log out", badFile:"That file is not a valid backup.",
     customer:"Customer", payNote:"Easypaisa/JazzCash here are manual transfers. No payment gateway or secret is stored on this page.", items:"items", spicy:"Spicy", veg:"Veg", lang:"اردو", themeBtn:"Theme",
     cat_new:"Add category", catEn:"Category (English)", catUr:"Category (Urdu)", offerBanner:"Offers", setDefaultBanner:"Hot deals today", useCode:"Use code %s",
-    ownerOnlyDevice:"Orders and menu are stored only in this browser. To share them between phones, you need a backend server."
+    ownerOnlyDevice:"Orders and menu are stored only in this browser. To share them between phones, you need a backend server.",
+    ordersCloud:"Your order status updates here automatically.", ownerCloud:"Orders from customers appear here on every device where you are logged in.",
+    newOrder:"New order", photoL:"Photo", removePhoto:"Remove photo", photoFail:"Photo could not be uploaded. Check internet and try again.", photoBad:"This photo could not be used."
   },
   ur: {
     item:"آئٹم", todayPick:"آج کی پسند", isClosed:"اس وقت بند ہے", viewCart:"کارٹ دیکھیں", regular:"عام", cancel:"منسوخ", cart:"کارٹ", orders:"میرے آرڈر", search:"کھانا تلاش کریں…", all:"سب", favs:"پسندیدہ",
@@ -225,7 +230,7 @@ const T = {
     place:"آرڈر دیں", needName:"براہِ کرم اپنا نام لکھیں۔", needPhone:"براہِ کرم درست فون نمبر لکھیں۔", needAddr:"براہِ کرم ڈیلیوری کا پتہ لکھیں۔", needTxn:"براہِ کرم ٹرانزیکشن آئی ڈی لکھیں۔",
     placed:"آرڈر مل گیا!", orderId:"آرڈر نمبر", copyText:"آرڈر کا متن کاپی کریں", copied:"کاپی ہو گیا", viewOrders:"آرڈر ٹریک کریں", noOrders:"ابھی کوئی آرڈر نہیں۔", paid:"ادا شدہ", unpaid:"ادائیگی باقی",
     s_received:"موصول", s_preparing:"تیار ہو رہا ہے", s_ready:"تیار", s_delivered:"مکمل", s_cancelled:"منسوخ", ready_delivery:"راستے میں", ready_pickup:"تیار",
-    pin:"مالک کا پن", enter:"داخل ہوں", wrongPin:"پن غلط ہے۔", ownerPanel:"مالک کا پینل", tabOrders:"آرڈر", tabMenu:"مینو", tabOffers:"آفرز", tabSettings:"سیٹنگز", tabBackup:"بیک اپ",
+    pin:"مالک کا پن", enter:"داخل ہوں", wrongPin:"پن غلط ہے۔", emailL:"مالک کی ای میل", passL:"پاس ورڈ", wrongLogin:"ای میل یا پاس ورڈ غلط ہے، یا انٹرنیٹ نہیں۔", cloudSaved:"آن لائن محفوظ ہو گیا ✓", cloudFail:"آن لائن محفوظ نہیں ہوا۔ انٹرنیٹ چیک کریں اور دوبارہ لاگ اِن کریں۔", cloudNote:"یہاں محفوظ کی گئی تبدیلیاں ہر گاہک کے فون پر نظر آئیں گی۔", ownerPanel:"مالک کا پینل", tabOrders:"آرڈر", tabMenu:"مینو", tabOffers:"آفرز", tabSettings:"سیٹنگز", tabBackup:"بیک اپ",
     today:"آج", revenue:"آمدنی", ordersN:"آرڈر", itemName:"نام (انگریزی)", itemNameUr:"نام (اردو، اختیاری)", category:"زمرہ", price:"قیمت (روپے)", emoji:"ایموجی", desc:"تفصیل",
     opts:"آپشنز (ہر سطر میں ایک، مثلاً Large=200)", save:"محفوظ کریں", newItem:"نئی آئٹم", edit:"ترمیم", del:"حذف", availToggle:"دستیاب", confirmDel:"کیا حذف کریں؟ یہ واپس نہیں ہو سکتا۔",
     code:"کوڈ", type:"قسم", percent:"فیصد %", flat:"مقررہ روپے", value:"قدر", minOrder:"کم از کم آرڈر", addPromo:"کوڈ شامل کریں", bannerEn:"ہوم بینر (انگریزی)", bannerUr:"ہوم بینر (اردو)",
@@ -234,7 +239,9 @@ const T = {
     saved:"محفوظ ہو گیا", exportJson:"بیک اپ ڈاؤن لوڈ کریں", importJson:"بیک اپ بحال کریں", exportCsv:"آرڈر ڈاؤن لوڈ کریں (CSV)", reset:"ڈیمو ڈیٹا بحال کریں", logout:"لاگ آؤٹ", badFile:"یہ فائل درست بیک اپ نہیں۔",
     customer:"گاہک", payNote:"یہاں ایزی پیسہ/جاز کیش دستی منتقلی ہیں۔ اس صفحے پر کوئی پیمنٹ گیٹ وے یا خفیہ کلید محفوظ نہیں۔", items:"آئٹمز", spicy:"تیز مرچ", veg:"سبزی", lang:"English", themeBtn:"تھیم",
     cat_new:"زمرہ شامل کریں", catEn:"زمرہ (انگریزی)", catUr:"زمرہ (اردو)", offerBanner:"آفرز", setDefaultBanner:"آج کی خاص آفرز", useCode:"کوڈ %s استعمال کریں",
-    ownerOnlyDevice:"آرڈر اور مینو صرف اسی براؤزر میں محفوظ ہیں۔ انہیں مختلف فونز کے درمیان شیئر کرنے کے لیے بیک اینڈ سرور درکار ہے۔"
+    ownerOnlyDevice:"آرڈر اور مینو صرف اسی براؤزر میں محفوظ ہیں۔ انہیں مختلف فونز کے درمیان شیئر کرنے کے لیے بیک اینڈ سرور درکار ہے۔",
+    ordersCloud:"آپ کے آرڈر کی کیفیت یہاں خود بخود اپ ڈیٹ ہوتی ہے۔", ownerCloud:"گاہکوں کے آرڈر ہر اس ڈیوائس پر نظر آئیں گے جہاں آپ لاگ اِن ہیں۔",
+    newOrder:"نیا آرڈر", photoL:"تصویر", removePhoto:"تصویر ہٹائیں", photoFail:"تصویر اپ لوڈ نہیں ہو سکی۔ انٹرنیٹ چیک کریں اور دوبارہ کوشش کریں۔", photoBad:"یہ تصویر استعمال نہیں ہو سکی۔"
   }
 };
 
@@ -287,38 +294,199 @@ const S = Object.assign({
 }, (() => { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch { return {}; } })());
 S.settings = Object.assign({}, D.settings, S.settings);
 let ui = { cat: "all", q: "", sort: "def", owner: false, tab: "orders", edit: null, promo: null, promoMsg: "", ck: null, lastOrder: null, ownerErr: "" };
-function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch {} }
-/* ===== orders sync ===== */
-const saveLocal = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch {} };
-const ordUrl = id => dbUrl("orders/" + id);
-async function orderSend(o) {
+function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch {} cloudPush(); }
+
+/* ============ cloud sync (Firebase Realtime Database, plain REST) ============ */
+/* Paste your two Firebase values between the quotes (see FIREBASE-SETUP.md).
+   While they are empty the shop works exactly as before: data stays on this device only. */
+const FIREBASE = { apiKey: "AIzaSyCkBT2BENJDURfiCH-Sn4dcI_RGwViJnDs", databaseURL: "https://ibrar-shop-27306-default-rtdb.firebaseio.com" };
+const cloudOn = !!(FIREBASE.apiKey && FIREBASE.databaseURL);
+const cloud = { token: "", refresh: "", exp: 0, last: "", empty: false };
+const dbUrl = p => FIREBASE.databaseURL.replace(/\/+$/, "") + "/" + p + ".json";
+const sharedData = () => ({ cats: S.cats, menu: S.menu, promos: S.promos, settings: S.settings });
+const asArr = v => Array.isArray(v) ? v.filter(Boolean) : (v && typeof v === "object" ? Object.values(v) : []);
+function tfetch(url, opt = {}) {
+  const c = new AbortController(), id = setTimeout(() => c.abort(), opt.timeout || 8000);
+  const o = Object.assign({}, opt, { signal: c.signal }); delete o.timeout;
+  return fetch(url, o).finally(() => clearTimeout(id));
+}
+
+/* ---- item photos: owner picks a photo, it is shrunk on the phone and kept in the database under photos/<itemId>.
+   Menu items only carry a small version tag (m.img). Customers download each photo once and keep it on their phone. ---- */
+const PHOTOKEY = "foodshop_photos_v1";
+const photos = (() => { try { return JSON.parse(localStorage.getItem(PHOTOKEY)) || {}; } catch { return {}; } })();
+const pkey = m => m.id + "|" + m.img;
+const photoOf = m => (m && m.img && photos[pkey(m)]) || "";
+const thumb = m => { const p = photoOf(m); return p ? `<img class="pimg" src="${esc(p)}" alt="" loading="lazy">` : esc((m && m.emoji) || "🍽️"); };
+function savePhotos() { try { localStorage.setItem(PHOTOKEY, JSON.stringify(photos)); } catch {} }
+const photoQ = [], photoPending = new Set(); let photoRun = 0, photoRenderT;
+function ensurePhotos() {
+  const keep = new Set(S.menu.filter(m => m.img).map(pkey)); let pruned = false;
+  Object.keys(photos).forEach(k => { if (!keep.has(k)) { delete photos[k]; pruned = true; } });
+  if (pruned) savePhotos();
   if (!cloudOn) return;
-  try { const r = await tfetch(ordUrl(o.id), { method: "PUT", body: JSON.stringify(o) }); o.synced = r.ok; } catch { o.synced = false; }
-  saveLocal();
+  S.menu.filter(m => m.img && !photos[pkey(m)] && !photoPending.has(pkey(m))).forEach(m => { photoPending.add(pkey(m)); photoQ.push(m); });
+  pumpPhotos();
 }
-async function orderPatch(o) {
-  if (!cloudOn || !cloud.token) return;
-  try { const tk = await cloudToken();
-    await tfetch(ordUrl(o.id) + "?auth=" + encodeURIComponent(tk), { method: "PATCH", body: JSON.stringify({ status: o.status, paid: !!o.paid }) }); } catch {}
+function pumpPhotos() {
+  while (photoRun < 4 && photoQ.length) { const m = photoQ.shift(); photoRun++; fetchPhoto(m).finally(() => { photoRun--; photoPending.delete(pkey(m)); pumpPhotos(); }); }
 }
-async function orderDelete(id) {
-  if (!cloudOn || !cloud.token) return;
-  try { const tk = await cloudToken(); await tfetch(ordUrl(id) + "?auth=" + encodeURIComponent(tk), { method: "DELETE" }); } catch {}
+async function fetchPhoto(m) {
+  try {
+    const r = await tfetch(dbUrl("photos/" + encodeURIComponent(m.id)), { timeout: 25000 });
+    if (!r.ok) return;
+    const d = await r.json();
+    if (typeof d === "string" && d.startsWith("data:image/")) {
+      photos[pkey(m)] = d; savePhotos();
+      clearTimeout(photoRenderT); photoRenderT = setTimeout(() => { render(); ["dItem", "dCart", "dOwner"].forEach(refresh); }, 250);
+    }
+  } catch {}
 }
-async function orderTrack() {
-  if (!cloudOn || ui.owner) return;
+/* shrink a picked photo to a small JPEG (about 20-40 KB) */
+function resizeImage(file, max = 420) {
+  return new Promise((res, rej) => {
+    const img = new Image(), url = URL.createObjectURL(file);
+    img.onload = () => {
+      const s = Math.min(1, max / Math.max(img.width, img.height)), c = document.createElement("canvas");
+      c.width = Math.max(1, Math.round(img.width * s)); c.height = Math.max(1, Math.round(img.height * s));
+      c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+      URL.revokeObjectURL(url);
+      let q = 0.72, out = c.toDataURL("image/jpeg", q);
+      while (out.length > 90000 && q > 0.35) { q -= 0.1; out = c.toDataURL("image/jpeg", q); }
+      out.length > 110000 ? rej(new Error("big")) : res(out);
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); rej(new Error("img")); };
+    img.src = url;
+  });
+}
+async function storePhoto(id, ver, data) {
+  Object.keys(photos).forEach(k => { if (k.startsWith(id + "|")) delete photos[k]; });
+  photos[id + "|" + ver] = data; savePhotos();
+  if (!cloudOn) return true;
+  if (!cloud.token) return false;
+  try {
+    const tk = await cloudToken();
+    const r = await tfetch(dbUrl("photos/" + encodeURIComponent(id)) + "?auth=" + encodeURIComponent(tk), { method: "PUT", body: JSON.stringify(data), timeout: 20000 });
+    return r.ok;
+  } catch { return false; }
+}
+function dropPhoto(id) {
+  Object.keys(photos).forEach(k => { if (k.startsWith(id + "|")) delete photos[k]; }); savePhotos();
+  if (cloudOn && cloud.token) cloudToken().then(tk => tfetch(dbUrl("photos/" + encodeURIComponent(id)) + "?auth=" + encodeURIComponent(tk), { method: "DELETE" })).catch(() => {});
+}
+
+/* ---- orders online: every order is also saved under orders/<id>. Customers can create but never read orders;
+   only the owner (logged in) can read, change status, or delete them. ---- */
+const normOrder = o => Object.assign({ paid: false, address: "", note: "", txn: "", promo: "" }, o, { items: asArr(o.items) });
+function cloudSendOrder(o) {
+  if (!cloudOn) return;
+  const body = JSON.stringify(Object.assign({}, o, { synced: undefined }));
+  tfetch(dbUrl("orders/" + encodeURIComponent(o.id)), { method: "PUT", body, timeout: 15000 })
+    .then(r => { if (r.ok) { o.synced = true; try { localStorage.setItem(KEY, JSON.stringify(S)); } catch {} } }).catch(() => {});
+}
+function resendOrders() {
+  if (!cloudOn) return;
+  const lim = Date.now() - 864e5;
+  S.orders.filter(o => !o.synced && o.time > lim && o.status === "received").forEach(cloudSendOrder);
+}
+/* customer: ask the database how each recent order is going */
+async function syncStatuses() {
+  if (!cloudOn) return;
+  resendOrders();
+  const lim = Date.now() - 3 * 864e5;
+  const act = S.orders.filter(o => o.synced && o.time > lim && !["delivered", "cancelled"].includes(o.status));
   let ch = false;
-  for (const o of S.orders.filter(x => !["delivered", "cancelled"].includes(x.status)).slice(0, 10)) {
-    if (!o.synced) { await orderSend(o); continue; }
+  await Promise.all(act.map(async o => {
     try {
-      const r = await tfetch(ordUrl(o.id) + "?t=" + Date.now(), { cache: "no-store" });
-      const c = r.ok ? await r.json() : null;
-      if (c && (c.status !== o.status || !!c.paid !== !!o.paid)) { o.status = c.status; o.paid = !!c.paid; ch = true; }
+      const r = await tfetch(dbUrl("orders/" + encodeURIComponent(o.id) + "/status")); if (!r.ok) return;
+      const s = await r.json();
+      if (typeof s === "string" && s !== o.status) { o.status = s; ch = true; }
     } catch {}
-  }
-  if (ch) { saveLocal(); ["dOrders", "dDone"].forEach(refresh); }
+  }));
+  if (ch) { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch {} ["dOrders", "dDone"].forEach(refresh); }
 }
-let ordTimer;
+/* owner: list, update, delete */
+cloud.orders = []; cloud.seen = null;
+const ownerList = () => cloudOn ? cloud.orders : S.orders;
+async function cloudLoadOrders() {
+  if (!cloudOn || !cloud.token) return;
+  try {
+    const tk = await cloudToken();
+    const base = dbUrl("orders") + "?auth=" + encodeURIComponent(tk);
+    let r = await tfetch(base + "&orderBy=%22time%22&limitToLast=150", { timeout: 15000 });
+    if (!r.ok) r = await tfetch(base, { timeout: 15000 });
+    if (!r.ok) return;
+    const o = await r.json();
+    const list = Object.values(o || {}).filter(x => x && x.id).map(normOrder).sort((a, b) => b.time - a.time);
+    const fresh = cloud.seen ? list.filter(x => !cloud.seen.has(x.id)) : [];
+    cloud.seen = new Set(list.map(x => x.id)); cloud.orders = list;
+    if (fresh.length) { toast(t("newOrder") + ": " + fresh.map(x => x.id).join(", ")); try { navigator.vibrate && navigator.vibrate([200, 100, 200]); } catch {} }
+    const d = document.getElementById("dOwner");
+    if (ui.owner && d && d.open && ui.tab === "orders" && !ui.edit) refresh("dOwner");
+  } catch {}
+}
+async function cloudOrderWrite(method, id, body) {
+  try {
+    const tk = await cloudToken();
+    const r = await tfetch(dbUrl("orders/" + encodeURIComponent(id)) + "?auth=" + encodeURIComponent(tk), { method, body: body ? JSON.stringify(body) : undefined, timeout: 15000 });
+    if (!r.ok) throw new Error("write");
+  } catch { toast(t("cloudFail")); }
+}
+let ownerPoll;
+function startOwnerPoll() { clearInterval(ownerPoll); ownerPoll = setInterval(() => { if (ui.owner && !document.hidden) cloudLoadOrders(); }, 20000); }
+/* customers + owner: download the shared menu */
+async function cloudPull() {
+  if (!cloudOn) return;
+  try {
+    const r = await tfetch(dbUrl("shop") + "?t=" + Date.now(), { cache: "no-store" });
+    if (!r.ok) return;
+    const o = await r.json();
+    cloud.empty = !o || typeof o !== "object";
+    if (cloud.empty) return;
+    const sig = JSON.stringify(o);
+    if (sig === cloud.last) return;
+    cloud.last = sig;
+    S.menu = asArr(o.menu).map(m => Object.assign({ avail: true }, m, { opts: asArr(m.opts) }));
+    S.cats = asArr(o.cats);
+    S.promos = asArr(o.promos);
+    S.settings = Object.assign({}, D.settings, o.settings || {});
+    S.cart = S.cart.filter(l => item(l.id));
+    try { localStorage.setItem(KEY, JSON.stringify(S)); } catch {}
+    refreshAll(); ensurePhotos();
+  } catch {}
+}
+/* owner only: log in with the Firebase email + password */
+async function cloudSignIn(email, pass) {
+  const r = await tfetch("https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=" + encodeURIComponent(FIREBASE.apiKey),
+    { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email, password: pass, returnSecureToken: true }) });
+  const j = await r.json();
+  if (!r.ok || !j.idToken) throw new Error("login");
+  cloud.token = j.idToken; cloud.refresh = j.refreshToken; cloud.exp = Date.now() + (Number(j.expiresIn) - 60) * 1000;
+}
+async function cloudToken() {
+  if (cloud.token && Date.now() < cloud.exp) return cloud.token;
+  const r = await tfetch("https://securetoken.googleapis.com/v1/token?key=" + encodeURIComponent(FIREBASE.apiKey),
+    { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body: "grant_type=refresh_token&refresh_token=" + encodeURIComponent(cloud.refresh) });
+  const j = await r.json();
+  if (!r.ok || !j.id_token) throw new Error("refresh");
+  cloud.token = j.id_token; cloud.refresh = j.refresh_token; cloud.exp = Date.now() + (Number(j.expires_in) - 60) * 1000;
+  return cloud.token;
+}
+/* owner only: upload the menu after every save */
+let pushTimer;
+function cloudPush() {
+  if (!cloudOn || !cloud.token) return;
+  clearTimeout(pushTimer);
+  pushTimer = setTimeout(async () => {
+    const body = JSON.stringify(sharedData());
+    if (body === cloud.sent) return;
+    try {
+      const tk = await cloudToken();
+      const r = await tfetch(dbUrl("shop") + "?auth=" + encodeURIComponent(tk), { method: "PUT", body });
+      if (r.ok) { cloud.sent = body; cloud.last = ""; toast(t("cloudSaved")); } else toast(t("cloudFail"));
+    } catch { toast(t("cloudFail")); }
+  }, 400);
+}
 const t = (k, ...a) => { let s = (T[S.lang] && T[S.lang][k]) ?? T.en[k] ?? k; a.forEach((v, i) => { s = s.replace("%" + (i + 1), v).replace("%s", v); }); return s; };
 const nm = x => (S.lang === "ur" && x.name_ur) ? x.name_ur : x.name;
 const catName = c => (S.lang === "ur" && c.ur) ? c.ur : c.en;
@@ -353,7 +521,15 @@ function show(id, render, wide) {
 function refresh(id) { const d = document.getElementById(id); if (d && d.open && openRender[id]) { const sc = d.querySelector(".dlg-b"); const top = sc ? sc.scrollTop : 0; d.innerHTML = openRender[id](); const n = d.querySelector(".dlg-b"); if (n) n.scrollTop = top; } }
 function closeDlg(id) { const d = document.getElementById(id); if (d && d.open) d.close(); }
 function head(title, id) { return `<div class="dlg-h"><h2>${esc(title)}</h2><button class="btn small" data-act="close" data-id="${id}" aria-label="${esc(t("close"))}">✕</button></div>`; }
-function toast(msg) { const el = $("#toast"); el.textContent = msg; el.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => { el.hidden = true; }, 2200); }
+function toast(msg) {
+  const el = $("#toast"); el.textContent = msg; el.hidden = false;
+  /* popover puts the message in the top layer so it shows ABOVE open dialogs (owner panel) */
+  try { if (el.matches(":popover-open")) el.hidePopover(); el.showPopover(); } catch {}
+  clearTimeout(toast.t);
+  toast.t = setTimeout(() => { el.hidden = true; try { el.hidePopover(); } catch {} }, 2200);
+}
+/* ask the browser not to clear saved menu/settings when it is low on space */
+try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch {}
 function refreshAll() { render(); ["dCart", "dItem", "dCheckout", "dOrders", "dOwner", "dDone"].forEach(refresh); }
 
 /* ============ main page ============ */
@@ -383,7 +559,7 @@ function render() {
   const bn = ur ? (S.settings.banner_ur || S.settings.banner) : S.settings.banner;
   const pick = todayPick(), p0 = S.promos[0];
   $("#hero").innerHTML = `<div class="bulbs"></div><h1 class="board-name">${esc(S.settings.name)}</h1><p class="board-line">${esc(bn)}</p>
-    <div class="board-row">${pick ? `<button class="pick" data-act="open" data-id="${esc(pick.id)}"><span class="pe">${esc(pick.emoji || "🍽️")}</span><span>${esc(t("todayPick"))}: ${esc(nm(pick))}<span dir="ltr">${money(pick.price)}</span></span></button>` : ""}
+    <div class="board-row">${pick ? `<button class="pick" data-act="open" data-id="${esc(pick.id)}"><span class="pe">${thumb(pick)}</span><span>${esc(t("todayPick"))}: ${esc(nm(pick))}<span dir="ltr">${money(pick.price)}</span></span></button>` : ""}
     ${p0 ? `<div class="ticket"><b>${esc(p0.code)}</b><span>${p0.type === "percent" ? esc(p0.value + "% " + t("discount")) : esc(money(p0.value) + " " + t("discount"))}</span></div>` : ""}</div>`;
   const parts = [S.settings.open ? "🟢 " + t("open") : "🔴 " + t("isClosed")];
   if (S.settings.freeOver > 0) parts.push("🛵 " + t("freeOver", money(S.settings.freeOver)));
@@ -408,7 +584,7 @@ function render() {
 function card(m, i) {
   const fav = S.favs.includes(m.id);
   return `<article class="item${m.avail ? "" : " off"}">
-    <button class="pic tone${i % 5}" data-act="open" data-id="${esc(m.id)}" aria-label="${esc(nm(m))}">${esc(m.emoji || "🍽️")}</button>
+    <button class="pic tone${i % 5}" data-act="open" data-id="${esc(m.id)}" aria-label="${esc(nm(m))}">${thumb(m)}</button>
     <div><div class="nl"><h3>${esc(nm(m))}</h3><i class="dots" aria-hidden="true"></i><span class="price" dir="ltr">${money(m.price)}${m.opts && m.opts.length ? "+" : ""}</span></div>
       ${m.desc ? `<p class="desc">${esc(m.desc)}</p>` : ""}
       <div class="acts"><div class="tags">${m.spicy ? `<span class="tag hot">🌶 ${esc(t("spicy"))}</span>` : ""}${m.veg ? `<span class="tag veg">🌱 ${esc(t("veg"))}</span>` : ""}</div>
@@ -424,7 +600,7 @@ function renderItem() {
   const m = item(itemSel.id); if (!m) return "";
   const unit = m.price + (itemSel.opt != null && m.opts[itemSel.opt] ? m.opts[itemSel.opt].d : 0);
   return `${head(nm(m), "dItem")}<div class="dlg-b">
-    <div style="width:110px;height:110px;margin:0 auto 8px;border-radius:50%;border:2px solid var(--edge);box-shadow:4px 4px 0 var(--shadowc);background:#FFD166;display:grid;place-items:center;font-size:3.6rem">${esc(m.emoji || "🍽️")}</div>
+    <div style="width:110px;height:110px;margin:0 auto 8px;border-radius:50%;border:2px solid var(--edge);box-shadow:4px 4px 0 var(--shadowc);background:#FFD166;display:grid;place-items:center;font-size:3.6rem;overflow:hidden">${thumb(m)}</div>
     <p>${esc(m.desc || "")}</p>
     ${m.opts.length ? `<div class="field"><label>${esc(t("size"))}</label><div class="radio"><label class="${itemSel.opt == null ? "on" : ""}"><input type="radio" name="opt" data-act="opt" data-i="-1" ${itemSel.opt == null ? "checked" : ""}> ${esc(t("regular"))}</label>${m.opts.map((o, i) => `<label class="${itemSel.opt === i ? "on" : ""}"><input type="radio" name="opt" data-act="opt" data-i="${i}" ${itemSel.opt === i ? "checked" : ""}> ${esc(o.n)} ${o.d ? "(+" + money(o.d) + ")" : ""}</label>`).join("")}</div></div>` : ""}
     <div class="field"><label>${esc(t("quantity"))}</label><div class="qty"><button data-act="iq" data-d="-1" aria-label="−">−</button><b>${itemSel.qty}</b><button data-act="iq" data-d="1" aria-label="+">+</button></div></div>
@@ -438,7 +614,7 @@ function openCart() { show("dCart", renderCart); }
 function renderCart() {
   const tt = totals("delivery");
   const lines = S.cart.map((l, i) => { const m = item(l.id); if (!m) return ""; const o = l.opt != null ? m.opts[l.opt] : null;
-    return `<div class="line"><div class="ic">${esc(m.emoji || "🍽️")}</div><div class="grow"><b>${esc(nm(m))}</b>${o ? ` <span class="note">(${esc(o.n)})</span>` : ""}<div class="note">${money(linePrice(l))}${l.note ? " · " + esc(l.note) : ""}</div></div>
+    return `<div class="line"><div class="ic">${thumb(m)}</div><div class="grow"><b>${esc(nm(m))}</b>${o ? ` <span class="note">(${esc(o.n)})</span>` : ""}<div class="note">${money(linePrice(l))}${l.note ? " · " + esc(l.note) : ""}</div></div>
       <div class="qty"><button data-act="cq" data-i="${i}" data-d="-1" aria-label="−">−</button><b>${l.qty}</b><button data-act="cq" data-i="${i}" data-d="1" aria-label="+">+</button></div>
       <button class="btn small danger" data-act="crm" data-i="${i}" aria-label="${esc(t("remove"))}">✕</button></div>`; }).join("");
   if (!S.cart.length) return `${head(t("cartTitle"), "dCart")}<div class="dlg-b"><p>${esc(t("cartEmpty"))}</p></div>`;
@@ -500,7 +676,7 @@ function placeOrder() {
     name: c.name.trim(), phone: c.phone.trim(), address: c.type === "delivery" ? c.address.trim() : "", type: c.type, pay: c.pay, txn: c.txn.trim(), note: c.note.trim(),
     sub: tt.sub, disc: tt.disc, promo: tt.disc ? ui.promo : "", fee: tt.fee, total: tt.total, status: "received", paid: false
   };
-  S.orders.unshift(o); S.cart = []; ui.promo = null; ui.promoMsg = ""; ui.lastOrder = o.id; save(); orderSend(o);
+  S.orders.unshift(o); S.cart = []; ui.promo = null; ui.promoMsg = ""; ui.lastOrder = o.id; save(); cloudSendOrder(o);
   const wa = S.settings.wa && c.wa ? "https://wa.me/" + S.settings.wa.replace(/\D/g, "") + "?text=" + encodeURIComponent(orderText(o)) : "";
   ui.ck = null; closeDlg("dCheckout"); render();
   show("dDone", renderDone);
@@ -533,11 +709,14 @@ function orderCard(o, owner) {
       <label style="display:flex;gap:6px;align-items:center"><input type="checkbox" style="width:auto;min-height:0" data-act="opaid" data-id="${esc(o.id)}" ${o.paid ? "checked" : ""}> ${esc(t("paid"))}</label>
       <button class="btn small danger" data-act="odel" data-id="${esc(o.id)}">${esc(t("del"))}</button></div>` : ""}</div>`;
 }
-function renderOrders() { return `${head(t("orders"), "dOrders")}<div class="dlg-b">${S.orders.length ? S.orders.map(o => orderCard(o, false)).join("") : `<p>${esc(t("noOrders"))}</p>`}<p class="note">${esc(t("ownerOnlyDevice"))}</p></div>`; }
+function renderOrders() { return `${head(t("orders"), "dOrders")}<div class="dlg-b">${S.orders.length ? S.orders.map(o => orderCard(o, false)).join("") : `<p>${esc(t("noOrders"))}</p>`}<p class="note">${esc(t(cloudOn ? "ordersCloud" : "ownerOnlyDevice"))}</p></div>`; }
 
 /* ============ owner panel ============ */
 function openOwner() { show("dOwner", renderOwner, true); }
 function renderOwner() {
+  if (!ui.owner && cloudOn) return `${head(t("owner"), "dOwner")}<div class="dlg-b"><div class="field"><label for="cEmail">${esc(t("emailL"))}</label><input id="cEmail" type="email" autocomplete="username" autocapitalize="none"></div>
+    <div class="field"><label for="cPass">${esc(t("passL"))}</label><input id="cPass" type="password" autocomplete="current-password"></div>
+    ${ui.ownerErr ? `<div class="err" role="alert">${esc(ui.ownerErr)}</div>` : ""}<button class="btn primary" data-act="cloudlogin">${esc(t("enter"))}</button><p class="note">${esc(t("cloudNote"))}</p></div>`;
   if (!ui.owner) return `${head(t("owner"), "dOwner")}<div class="dlg-b"><div class="field"><label for="pinIn">${esc(t("pin"))}</label><input id="pinIn" type="password" inputmode="numeric" autocomplete="off" maxlength="12"></div>
     ${ui.ownerErr ? `<div class="err" role="alert">${esc(ui.ownerErr)}</div>` : ""}<button class="btn primary" data-act="pinok">${esc(t("enter"))}</button><p class="note">${esc(t("pinNote"))}</p></div>`;
   const tabs = [["orders", "tabOrders"], ["menu", "tabMenu"], ["offers", "tabOffers"], ["settings", "tabSettings"], ["backup", "tabBackup"]];
@@ -546,9 +725,11 @@ function renderOwner() {
 }
 function ownerOrders() {
   const start = new Date(); start.setHours(0, 0, 0, 0);
-  const today = S.orders.filter(o => o.time >= start.getTime() && o.status !== "cancelled");
+  const L = ownerList();
+  const today = L.filter(o => o.time >= start.getTime() && o.status !== "cancelled");
   return `<div class="two"><div class="stat"><b>${today.length}</b>${esc(t("today"))} · ${esc(t("ordersN"))}</div><div class="stat"><b>${money(today.reduce((a, o) => a + o.total, 0))}</b>${esc(t("today"))} · ${esc(t("revenue"))}</div></div>
-    ${S.orders.length ? S.orders.map(o => orderCard(o, true)).join("") : `<p>${esc(t("noOrders"))}</p>`}`;
+    ${cloudOn ? `<p class="note">${esc(t("ownerCloud"))}</p>` : ""}
+    ${L.length ? L.map(o => orderCard(o, true)).join("") : `<p>${esc(t("noOrders"))}</p>`}`;
 }
 function ownerMenu() {
   const e = ui.edit, isNew = e && !e.id;
@@ -557,12 +738,13 @@ function ownerMenu() {
     <div class="two"><div class="field"><label>${esc(t("category"))}</label><select data-ed="cat">${S.cats.map(c => `<option value="${esc(c.id)}"${e.cat === c.id ? " selected" : ""}>${esc(c.en)}</option>`).join("")}</select></div>
     <div class="field"><label>${esc(t("price"))}</label><input data-ed="price" type="number" min="0" value="${esc(e.price)}"></div></div>
     <div class="two"><div class="field"><label>${esc(t("emoji"))}</label><input data-ed="emoji" value="${esc(e.emoji)}" maxlength="4"></div><div class="field"><label>${esc(t("desc"))}</label><input data-ed="desc" value="${esc(e.desc)}" maxlength="140"></div></div>
+    <div class="field"><label>${esc(t("photoL"))}</label>${(e.imgData || (!e.removeImg && photoOf(e))) ? `<img class="pimg" style="width:84px;height:84px;display:block;margin-bottom:6px" src="${esc(e.imgData || photoOf(e))}" alt="">` : ""}<input id="photoIn" type="file" accept="image/*">${(e.imgData || (e.img && !e.removeImg)) ? `<button class="btn small" style="margin-top:6px" data-act="rmphoto">${esc(t("removePhoto"))}</button>` : ""}</div>
     <div class="field"><label>${esc(t("opts"))}</label><textarea data-ed="optsText">${esc(e.optsText)}</textarea></div>
     <div class="radio"><label><input type="checkbox" data-ed="spicy" ${e.spicy ? "checked" : ""}> ${esc(t("spicy"))}</label><label><input type="checkbox" data-ed="veg" ${e.veg ? "checked" : ""}> ${esc(t("veg"))}</label></div>
     ${ui.editErr ? `<div class="err">${esc(ui.editErr)}</div>` : ""}
     <div style="display:flex;gap:8px;margin-top:8px"><button class="btn primary" data-act="saveitem">${esc(t("save"))}</button><button class="btn" data-act="canceledit">${esc(t("cancel"))}</button></div></div>` : `<button class="btn primary" data-act="newitem">+ ${esc(t("newItem"))}</button>`;
   const cats = `<div class="order"><h4>${esc(t("cat_new"))}</h4><div class="two"><input id="newCatEn" placeholder="${esc(t("catEn"))}" maxlength="30"><input id="newCatUr" placeholder="${esc(t("catUr"))}" maxlength="30"></div><button class="btn small" style="margin-top:8px" data-act="addcat">+</button></div>`;
-  return `${form}<div style="margin-top:10px">${S.menu.map(m => `<div class="line"><div class="ic">${esc(m.emoji)}</div><div class="grow"><b>${esc(m.name)}</b><div class="note">${money(m.price)} · ${esc((S.cats.find(c => c.id === m.cat) || {}).en || "")}</div></div>
+  return `${form}<div style="margin-top:10px">${S.menu.map(m => `<div class="line"><div class="ic">${thumb(m)}</div><div class="grow"><b>${esc(m.name)}</b><div class="note">${money(m.price)} · ${esc((S.cats.find(c => c.id === m.cat) || {}).en || "")}</div></div>
     <label style="display:flex;gap:4px;align-items:center"><input type="checkbox" style="width:auto;min-height:0" data-act="avail" data-id="${esc(m.id)}" ${m.avail ? "checked" : ""}> ${esc(t("availToggle"))}</label>
     <button class="btn small" data-act="edititem" data-id="${esc(m.id)}">${esc(t("edit"))}</button><button class="btn small danger" data-act="delitem" data-id="${esc(m.id)}">${esc(t("del"))}</button></div>`).join("")}</div>${cats}`;
 }
@@ -579,7 +761,7 @@ function ownerSettings() {
   return `${f("stName", t("shopName"), s.name)}${f("stWa", t("waNum"), s.wa, "text", "923001234567")}${f("stEp", t("epNum"), s.ep)}${f("stJc", t("jcNum"), s.jc)}${f("stAcc", t("accTitle"), s.acc)}
     <div class="two">${f("stFee", t("delFee"), s.fee, "number")}${f("stFree", t("freeAbove"), s.freeOver, "number")}</div>
     <label style="display:flex;gap:8px;align-items:center;margin:8px 0"><input type="checkbox" id="stOpen" style="width:auto;min-height:0" ${s.open ? "checked" : ""}> ${esc(t("open"))}</label>
-    ${f("stPin", t("newPin"), "", "password")}<p class="note">${esc(t("pinNote"))}</p><button class="btn primary" data-act="savesettings">${esc(t("save"))}</button>`;
+    ${cloudOn ? `<p class="note">${esc(t("cloudNote"))}</p>` : `${f("stPin", t("newPin"), "", "password")}<p class="note">${esc(t("pinNote"))}</p>`}<button class="btn primary" data-act="savesettings">${esc(t("save"))}</button>`;
 }
 function ownerBackup() {
   return `<div style="display:flex;flex-direction:column;gap:8px;align-items:flex-start"><button class="btn" data-act="exportjson">${esc(t("exportJson"))}</button>
@@ -625,20 +807,33 @@ document.addEventListener("click", e => {
     case "showorders": closeDlg("dDone"); show("dOrders", renderOrders); break;
     case "pinok": { const v = ($("#pinIn").value || ""); if (v === S.pin) { ui.owner = true; ui.ownerErr = ""; } else ui.ownerErr = t("wrongPin"); refresh("dOwner"); break; }
     case "otab": ui.tab = id; ui.edit = null; refresh("dOwner"); break;
-    case "ologout": ui.owner = false; ui.edit = null; refresh("dOwner"); break;
+    case "cloudlogin": {
+      const em = ($("#cEmail").value || "").trim(), pw = $("#cPass").value || "";
+      cloudSignIn(em, pw)
+        .then(() => cloudPull())
+        .then(() => { ui.owner = true; ui.ownerErr = ""; if (cloud.empty) { cloud.sent = ""; cloudPush(); } cloud.seen = null; cloudLoadOrders(); startOwnerPoll(); refresh("dOwner"); })
+        .catch(() => { ui.owner = false; ui.ownerErr = t("wrongLogin"); refresh("dOwner"); });
+      break; }
+    case "ologout": ui.owner = false; ui.edit = null; cloud.token = ""; cloud.refresh = ""; cloud.orders = []; cloud.seen = null; clearInterval(ownerPoll); refresh("dOwner"); break;
     case "ostatus": break;
-    case "odel": if (confirm(t("confirmDel"))) { orderDelete(id); S.orders = S.orders.filter(o => o.id !== id); save(); refresh("dOwner"); } break;
+    case "odel": if (confirm(t("confirmDel"))) {
+      if (cloudOn) { cloud.orders = cloud.orders.filter(o => o.id !== id); cloudOrderWrite("DELETE", id); }
+      S.orders = S.orders.filter(o => o.id !== id); save(); refresh("dOwner"); } break;
     case "newitem": ui.edit = { id: "", name: "", name_ur: "", cat: S.cats[0] ? S.cats[0].id : "", price: "", emoji: "🍽️", desc: "", optsText: "", spicy: false, veg: false }; ui.editErr = ""; refresh("dOwner"); break;
     case "edititem": { const m = item(id); ui.edit = Object.assign({}, m, { optsText: m.opts.map(o => o.n + "=" + o.d).join("\n") }); ui.editErr = ""; refresh("dOwner"); break; }
     case "canceledit": ui.edit = null; refresh("dOwner"); break;
+    case "rmphoto": if (ui.edit) { ui.edit.imgData = ""; ui.edit.removeImg = true; } refresh("dOwner"); break;
     case "saveitem": {
       const e2 = ui.edit, price = Number(e2.price);
       if (!e2.name.trim() || !isFinite(price) || price < 0 || e2.price === "") { ui.editErr = t("itemName") + " / " + t("price"); refresh("dOwner"); break; }
-      const rec = { id: e2.id || "i" + uid(), cat: e2.cat, name: e2.name.trim(), name_ur: (e2.name_ur || "").trim(), price: Math.round(price), emoji: (e2.emoji || "🍽️").trim(), desc: (e2.desc || "").trim(), spicy: !!e2.spicy, veg: !!e2.veg, avail: e2.id ? item(e2.id).avail : true, opts: parseOpts(e2.optsText) };
-      const k = S.menu.findIndex(m => m.id === rec.id); if (k >= 0) S.menu[k] = rec; else S.menu.push(rec);
-      ui.edit = null; save(); refreshAll(); toast(t("saved")); break; }
+      const rec = { id: e2.id || "i" + uid(), cat: e2.cat, name: e2.name.trim(), name_ur: (e2.name_ur || "").trim(), price: Math.round(price), emoji: (e2.emoji || "🍽️").trim(), desc: (e2.desc || "").trim(), spicy: !!e2.spicy, veg: !!e2.veg, avail: e2.id ? item(e2.id).avail : true, opts: parseOpts(e2.optsText), img: e2.removeImg ? "" : (e2.img || "") };
+      const finish = () => { const k = S.menu.findIndex(m => m.id === rec.id); if (k >= 0) S.menu[k] = rec; else S.menu.push(rec); ui.edit = null; save(); refreshAll(); toast(t("saved")); };
+      if (e2.removeImg && e2.id) dropPhoto(e2.id);
+      if (e2.imgData) { const ver = uid(); storePhoto(rec.id, ver, e2.imgData).then(ok => { if (ok) rec.img = ver; else toast(t("photoFail")); finish(); }); }
+      else finish();
+      break; }
     case "avail": { const m = item(id); if (m) { m.avail = b.checked; save(); render(); } break; }
-    case "delitem": if (confirm(t("confirmDel"))) { S.menu = S.menu.filter(m => m.id !== id); S.cart = S.cart.filter(l => l.id !== id); save(); refreshAll(); } break;
+    case "delitem": if (confirm(t("confirmDel"))) { dropPhoto(id); S.menu = S.menu.filter(m => m.id !== id); S.cart = S.cart.filter(l => l.id !== id); save(); refreshAll(); } break;
     case "addcat": { const en = $("#newCatEn").value.trim(), ur = $("#newCatUr").value.trim(); if (en) { S.cats.push({ id: "c" + uid(), en, ur }); save(); refreshAll(); } break; }
     case "savebanner": S.settings.banner = $("#bnEn").value.trim(); S.settings.banner_ur = $("#bnUr").value.trim(); save(); render(); toast(t("saved")); break;
     case "addpromo": {
@@ -649,7 +844,7 @@ document.addEventListener("click", e => {
     case "savesettings": {
       const s = S.settings; s.name = $("#stName").value.trim() || s.name; s.wa = $("#stWa").value.replace(/\D/g, ""); s.ep = $("#stEp").value.trim(); s.jc = $("#stJc").value.trim(); s.acc = $("#stAcc").value.trim();
       s.fee = Math.max(0, Number($("#stFee").value) || 0); s.freeOver = Math.max(0, Number($("#stFree").value) || 0); s.open = $("#stOpen").checked;
-      const np = $("#stPin").value; if (np) { if (np.length >= 4) S.pin = np; else { toast(t("newPin")); break; } }
+      const np = $("#stPin") ? $("#stPin").value : ""; if (np) { if (np.length >= 4) S.pin = np; else { toast(t("newPin")); break; } }
       save(); render(); toast(t("saved")); break; }
     case "exportjson": download("food-shop-backup.json", JSON.stringify({ cats: S.cats, menu: S.menu, promos: S.promos, settings: S.settings, orders: S.orders }, null, 2), "application/json"); break;
     case "exportcsv": {
@@ -660,9 +855,22 @@ document.addEventListener("click", e => {
 });
 document.addEventListener("change", e => {
   const el = e.target;
-  if (el.dataset.act === "ostatus") { const o = S.orders.find(x => x.id === el.dataset.id); if (o) { o.status = el.value; save(); orderPatch(o); refresh("dOwner"); } }
-  else if (el.dataset.act === "opaid") { const o = S.orders.find(x => x.id === el.dataset.id); if (o) { o.paid = el.checked; save(); orderPatch(o); refresh("dOwner"); } }
+  if (el.dataset.act === "ostatus") {
+    const o = ownerList().find(x => x.id === el.dataset.id), lo = S.orders.find(x => x.id === el.dataset.id);
+    if (o) o.status = el.value; if (lo) lo.status = el.value;
+    if (cloudOn && o) cloudOrderWrite("PATCH", o.id, { status: el.value }); else save();
+    refresh("dOwner");
+  }
+  else if (el.dataset.act === "opaid") {
+    const o = ownerList().find(x => x.id === el.dataset.id), lo = S.orders.find(x => x.id === el.dataset.id);
+    if (o) o.paid = el.checked; if (lo) lo.paid = el.checked;
+    if (cloudOn && o) cloudOrderWrite("PATCH", o.id, { paid: el.checked }); else save();
+    refresh("dOwner");
+  }
   else if (el.dataset.act === "avail") { const m = item(el.dataset.id); if (m) { m.avail = el.checked; save(); render(); } }
+  else if (el.id === "photoIn" && el.files[0] && ui.edit) {
+    resizeImage(el.files[0]).then(d => { ui.edit.imgData = d; ui.edit.removeImg = false; refresh("dOwner"); }).catch(() => toast(t("photoBad")));
+  }
   else if (el.id === "impFile" && el.files[0]) {
     const r = new FileReader();
     r.onload = () => { try { const o = JSON.parse(r.result); if (!validBackup(o)) throw 0; S.cats = o.cats; S.menu = o.menu.map(m => Object.assign({ opts: [], avail: true }, m)); S.promos = Array.isArray(o.promos) ? o.promos : []; S.settings = Object.assign({}, demo().settings, o.settings); S.orders = o.orders; S.cart = []; save(); refreshAll(); toast(t("saved")); } catch { toast(t("badFile")); } };
@@ -684,9 +892,17 @@ $("#btnOrders").addEventListener("click", () => show("dOrders", renderOrders));
 $("#btnCart").addEventListener("click", openCart);
 $("#cartBar").addEventListener("click", openCart);
 $("#ownerLink").addEventListener("click", e => { e.preventDefault(); openOwner(); });
-document.addEventListener("keydown", e => { if (e.key === "Enter" && e.target.id === "pinIn") { e.preventDefault(); const b = document.querySelector('[data-act="pinok"]'); if (b) b.click(); } });
-render();
-orderTrack(); setInterval(orderTrack, 20000); setInterval(ordersPull, 15000);
+document.addEventListener("keydown", e => { if (e.key === "Enter" && (e.target.id === "pinIn" || e.target.id === "cPass")) { e.preventDefault(); const b = document.querySelector('[data-act="pinok"],[data-act="cloudlogin"]'); if (b) b.click(); } });
+
+/* start: show the cached menu at once; first-time visitors wait for the online menu so they never see demo items */
+(function start() {
+  let cached = false; try { cached = !!localStorage.getItem(KEY); } catch {}
+  if (!cloudOn) { render(); return; }
+  if (cached) { render(); ensurePhotos(); cloudPull(); } else { cloudPull().finally(() => { render(); ensurePhotos(); }); }
+  syncStatuses();
+  setInterval(() => { if (!ui.owner && !document.hidden) { cloudPull(); syncStatuses(); } }, 30000);
+  document.addEventListener("visibilitychange", () => { if (!document.hidden && !ui.owner) { cloudPull(); syncStatuses(); } });
+})();
 </script>
 </body>
 </html>
