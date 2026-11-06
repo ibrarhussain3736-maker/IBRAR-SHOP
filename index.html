@@ -155,11 +155,61 @@ table{width:100%;border-collapse:collapse}
 td,th{padding:6px;border-bottom:1px solid var(--line);text-align:start;vertical-align:top}
 @media (max-width:560px){.two{grid-template-columns:1fr}}
 @media print{header,footer,.tools,.chips,#grid,.board,.marq,.cartbar{display:none}}
+
+/* ===== redesign ===== */
+.top .row{padding:8px 0}
+.brand{display:flex;align-items:center;gap:10px;min-width:0;font-size:1rem}
+.logo{width:40px;height:40px;border-radius:50%;background:var(--gold);color:#1C1033;border:2px solid var(--edge);display:grid;place-items:center;font-family:var(--display);font-size:1.3rem;flex:none}
+.bt{display:flex;flex-direction:column;min-width:0;line-height:1.25}
+.bt b{font-family:var(--display);font-weight:400;font-size:1.15rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bt small{color:var(--muted);font-size:.78rem}
+.board{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:12px 0 0;padding:14px 16px;border-radius:18px;box-shadow:4px 4px 0 var(--gold);min-height:0}
+.board::before{display:none}
+.hl{display:flex;flex-direction:column;gap:6px;min-width:0}
+.hl small{color:var(--gold);font-weight:800;letter-spacing:.04em;text-transform:uppercase;font-size:.72rem}
+.pick{box-shadow:none;padding:4px 12px 4px 4px;border-radius:999px;gap:8px}
+.pick .pe{width:40px;height:40px;font-size:1.4rem}
+.pick .pt{display:flex;flex-direction:column;line-height:1.25;font-size:.9rem;text-align:start}
+.marq{display:none}
+.tools{flex-wrap:nowrap;margin:14px 0 4px}
+.sbox{position:relative;flex:1;min-width:0}
+.sbox input{padding-inline-start:38px}
+.sico{position:absolute;inset-inline-start:12px;top:50%;transform:translateY(-50%);pointer-events:none;font-size:.95rem}
+#sort{width:auto;max-width:112px;flex:none;padding-inline:8px;font-size:.85rem}
+.chips{position:sticky;top:calc(var(--hh,60px) - 2px);z-index:15;background:var(--bg);margin:0 -16px;padding:8px 16px 10px;border-bottom:2px solid var(--edge)}
+.cat{font-size:1.35rem;margin:20px 0 10px}
+.cat::after{height:2px;background:var(--edge);opacity:.4}
+.rows{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+@media(min-width:720px){.rows{grid-template-columns:repeat(3,1fr)}}
+@media(min-width:980px){.rows{grid-template-columns:repeat(4,1fr)}}
+.item{display:flex;flex-direction:column;padding:0;border:2px solid var(--edge);border-radius:16px;background:var(--card);box-shadow:3px 3px 0 var(--shadowc);overflow:hidden}
+.pw{position:relative}
+.pic{width:100%;height:140px;border:0;border-bottom:2px solid var(--edge);border-radius:0;box-shadow:none;font-size:3.4rem;align-self:auto}
+.pic .pimg{border-radius:0}
+.pw .fav{position:absolute;top:8px;inset-inline-end:8px;width:34px;height:34px}
+.tone5{--tone:#E4D2F5}
+.ib{display:flex;flex-direction:column;gap:4px;padding:10px 12px 12px;flex:1}
+.ib h3{margin:0;font-size:1rem;font-weight:800;line-height:1.25}
+.ib .desc{margin:0;font-size:.82rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.pr{display:flex;justify-content:space-between;align-items:center;margin-top:auto;padding-top:6px}
+.add{width:44px;height:44px;border-radius:50%;border:2px solid var(--edge);background:var(--accent);color:var(--accent-ink);font-size:1.6rem;font-weight:800;line-height:1;box-shadow:2px 2px 0 var(--shadowc)}
+.add:active{transform:translate(1px,1px)}
+.cartbar{left:0;right:0;bottom:0;max-width:none;border-radius:0;border-width:2px 0 0;box-shadow:none;background:#1F1A38;color:#fff;min-height:64px;padding:8px 16px;padding-bottom:calc(8px + env(safe-area-inset-bottom))}
+.cartbar span:nth-child(1){font-weight:700}
+.cartbar span:nth-child(2){margin-inline-start:auto;margin-inline-end:10px}
+.cartbar span:nth-child(3){background:var(--gold);color:#1C1033;border-radius:12px;padding:10px 16px}
+.toast{bottom:84px}
+body{padding-bottom:84px}
+.top .row{gap:6px;flex-wrap:nowrap}
+.brand{flex:1;min-width:0}
+.top .btn{min-height:40px;padding:4px 9px;border-radius:10px;box-shadow:2px 2px 0 var(--shadowc);flex:none}
+.bt small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#ownerLink{color:var(--muted);font-size:.8rem;opacity:.8}
 </style>
 </head>
 <body>
 <header class="top"><div class="wrap"><div class="row">
-  <div class="brand" id="brand" aria-hidden="true">🍽️</div>
+  <div class="brand" id="brand"></div>
   <button class="btn hbtn" id="btnLang"></button>
   <button class="btn hbtn" id="btnTheme"></button>
   <button class="btn hbtn" id="btnOrders"></button>
@@ -170,8 +220,8 @@ td,th{padding:6px;border-bottom:1px solid var(--line);text-align:start;vertical-
   <section class="board" id="hero"></section>
   <div class="marq" id="marq" aria-hidden="true"></div>
   <div class="tools">
-    <input type="search" id="q" autocomplete="off">
-    <select id="sort" style="max-width:200px"></select>
+    <div class="sbox"><span class="sico" aria-hidden="true">🔍</span><input type="search" id="q" autocomplete="off"></div>
+    <select id="sort" aria-label="Sort"></select>
   </div>
   <div class="chips" id="chips" role="group"></div>
   <div id="grid" aria-live="polite"></div>
@@ -195,7 +245,7 @@ const T = {
     item:"item", todayPick:"Today's pick", isClosed:"Closed right now", viewCart:"View cart", regular:"Regular", cancel:"Cancel", cart:"Cart", orders:"My orders", search:"Search food…", all:"All", favs:"Favourites",
     sortDef:"Sort: menu order", sortLow:"Price: low to high", sortHigh:"Price: high to low",
     add:"Add", unavailable:"Sold out", empty:"Nothing matches your search.", closed:"The shop is closed right now. You can browse, but ordering is paused.",
-    owner:"Owner login", footTxt:"Orders are saved on this device.", addToCart:"Add to cart", size:"Size / option", quantity:"Quantity", noteItem:"Special request (optional)",
+    owner:"Owner login", footTxt:"Orders are sent online to the shop.", addToCart:"Add to cart", size:"Size / option", quantity:"Quantity", noteItem:"Special request (optional)",
     cartTitle:"Your cart", cartEmpty:"Your cart is empty.", remove:"Remove", promo:"Promo code", apply:"Apply", applied:"Applied", invalidPromo:"Invalid promo code.",
     minPromo:"This code needs an order of at least %s.", subtotal:"Subtotal", discount:"Discount", delivery:"Delivery", free:"Free", total:"Total", checkout:"Checkout",
     freeOver:"Free delivery over %s", close:"Close", back:"Back", orderType:"Order type", deliveryT:"Delivery", pickup:"Pickup", name:"Your name", phone:"Phone number",
@@ -221,7 +271,7 @@ const T = {
     item:"آئٹم", todayPick:"آج کی پسند", isClosed:"اس وقت بند ہے", viewCart:"کارٹ دیکھیں", regular:"عام", cancel:"منسوخ", cart:"کارٹ", orders:"میرے آرڈر", search:"کھانا تلاش کریں…", all:"سب", favs:"پسندیدہ",
     sortDef:"ترتیب: مینو", sortLow:"قیمت: کم سے زیادہ", sortHigh:"قیمت: زیادہ سے کم",
     add:"شامل کریں", unavailable:"ختم", empty:"آپ کی تلاش سے کچھ نہیں ملا۔", closed:"دکان اس وقت بند ہے۔ آپ مینو دیکھ سکتے ہیں مگر آرڈر بند ہے۔",
-    owner:"مالک لاگ اِن", footTxt:"آرڈر اسی ڈیوائس پر محفوظ ہوتے ہیں۔", addToCart:"کارٹ میں ڈالیں", size:"سائز / آپشن", quantity:"تعداد", noteItem:"خاص ہدایت (اختیاری)",
+    owner:"مالک لاگ اِن", footTxt:"آرڈر آن لائن دکان کو بھیجے جاتے ہیں۔", addToCart:"کارٹ میں ڈالیں", size:"سائز / آپشن", quantity:"تعداد", noteItem:"خاص ہدایت (اختیاری)",
     cartTitle:"آپ کا کارٹ", cartEmpty:"آپ کا کارٹ خالی ہے۔", remove:"ہٹائیں", promo:"پرومو کوڈ", apply:"لگائیں", applied:"لگ گیا", invalidPromo:"پرومو کوڈ درست نہیں۔",
     minPromo:"اس کوڈ کے لیے کم از کم %s کا آرڈر چاہیے۔", subtotal:"کل رقم", discount:"رعایت", delivery:"ڈیلیوری", free:"مفت", total:"ٹوٹل", checkout:"چیک آؤٹ",
     freeOver:"%s سے اوپر ڈیلیوری مفت", close:"بند کریں", back:"واپس", orderType:"آرڈر کی قسم", deliveryT:"ڈیلیوری", pickup:"خود لینا", name:"آپ کا نام", phone:"فون نمبر",
@@ -543,7 +593,9 @@ function render() {
   const theme = S.theme || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
   document.documentElement.dataset.theme = theme;
   document.title = S.settings.name;
-  $("#brand").setAttribute("title", S.settings.name);
+  $("#brand").innerHTML = `<span class="logo" aria-hidden="true">${esc((S.settings.name || "?").trim().charAt(0).toUpperCase())}</span><span class="bt"><b>${esc(S.settings.name)}</b><small>${S.settings.open ? "🟢 " + esc(t("open")) : "🔴 " + esc(t("isClosed"))}</small></span>`;
+  const setHH = () => document.documentElement.style.setProperty("--hh", ($("header.top").offsetHeight || 60) + "px");
+  setHH(); requestAnimationFrame(setHH);
   $("#btnLang").textContent = t("lang");
   $("#btnTheme").textContent = theme === "dark" ? "☀️" : "🌙";
   $("#btnTheme").setAttribute("aria-label", t("themeBtn"));
@@ -558,9 +610,8 @@ function render() {
   $("#closedBar").innerHTML = S.settings.open ? "" : `<div class="closed">${esc(t("closed"))}</div>`;
   const bn = ur ? (S.settings.banner_ur || S.settings.banner) : S.settings.banner;
   const pick = todayPick(), p0 = S.promos[0];
-  $("#hero").innerHTML = `<div class="bulbs"></div><h1 class="board-name">${esc(S.settings.name)}</h1><p class="board-line">${esc(bn)}</p>
-    <div class="board-row">${pick ? `<button class="pick" data-act="open" data-id="${esc(pick.id)}"><span class="pe">${thumb(pick)}</span><span>${esc(t("todayPick"))}: ${esc(nm(pick))}<span dir="ltr">${money(pick.price)}</span></span></button>` : ""}
-    ${p0 ? `<div class="ticket"><b>${esc(p0.code)}</b><span>${p0.type === "percent" ? esc(p0.value + "% " + t("discount")) : esc(money(p0.value) + " " + t("discount"))}</span></div>` : ""}</div>`;
+  $("#hero").innerHTML = `<div class="hl"><small>${esc(t("todayPick"))}</small>${pick ? `<button class="pick" data-act="open" data-id="${esc(pick.id)}"><span class="pe">${thumb(pick)}</span><span class="pt">${esc(nm(pick))}<span dir="ltr">${money(pick.price)}</span></span></button>` : ""}</div>
+    <div class="hr">${p0 ? `<div class="ticket"><b>${esc(p0.code)}</b><span>${p0.type === "percent" ? esc(p0.value + "% " + t("discount")) : esc(money(p0.value) + " " + t("discount"))}</span></div>` : ""}</div>`;
   const parts = [S.settings.open ? "🟢 " + t("open") : "🔴 " + t("isClosed")];
   if (S.settings.freeOver > 0) parts.push("🛵 " + t("freeOver", money(S.settings.freeOver)));
   S.promos.slice(0, 3).forEach(p => parts.push("🎟️ " + t("useCode", p.code)));
@@ -584,13 +635,12 @@ function render() {
 function card(m, i) {
   const fav = S.favs.includes(m.id);
   return `<article class="item${m.avail ? "" : " off"}">
-    <button class="pic tone${i % 5}" data-act="open" data-id="${esc(m.id)}" aria-label="${esc(nm(m))}">${thumb(m)}</button>
-    <div><div class="nl"><h3>${esc(nm(m))}</h3><i class="dots" aria-hidden="true"></i><span class="price" dir="ltr">${money(m.price)}${m.opts && m.opts.length ? "+" : ""}</span></div>
-      ${m.desc ? `<p class="desc">${esc(m.desc)}</p>` : ""}
-      <div class="acts"><div class="tags">${m.spicy ? `<span class="tag hot">🌶 ${esc(t("spicy"))}</span>` : ""}${m.veg ? `<span class="tag veg">🌱 ${esc(t("veg"))}</span>` : ""}</div>
-        <div class="right"><button class="fav" data-act="fav" data-id="${esc(m.id)}" aria-pressed="${fav}" aria-label="${esc(t("favs"))}">${fav ? "♥" : "♡"}</button>
-        ${m.avail ? `<button class="btn primary small" data-act="open" data-id="${esc(m.id)}">+ ${esc(t("add"))}</button>` : `<span class="note">${esc(t("unavailable"))}</span>`}</div></div>
-    </div></article>`;
+    <div class="pw"><button class="pic tone${i % 6}" data-act="open" data-id="${esc(m.id)}" aria-label="${esc(nm(m))}">${thumb(m)}</button>
+      <button class="fav" data-act="fav" data-id="${esc(m.id)}" aria-pressed="${fav}" aria-label="${esc(t("favs"))}">${fav ? "♥" : "♡"}</button></div>
+    <div class="ib"><h3>${esc(nm(m))}</h3>${m.desc ? `<p class="desc">${esc(m.desc)}</p>` : ""}
+      <div class="tags">${m.spicy ? `<span class="tag hot">🌶 ${esc(t("spicy"))}</span>` : ""}${m.veg ? `<span class="tag veg">🌱 ${esc(t("veg"))}</span>` : ""}</div>
+      <div class="pr"><span class="price" dir="ltr">${money(m.price)}${m.opts && m.opts.length ? "+" : ""}</span>
+      ${m.avail ? `<button class="add" data-act="open" data-id="${esc(m.id)}" aria-label="${esc(t("add"))}">+</button>` : `<span class="note">${esc(t("unavailable"))}</span>`}</div></div></article>`;
 }
 
 /* ============ item dialog ============ */
