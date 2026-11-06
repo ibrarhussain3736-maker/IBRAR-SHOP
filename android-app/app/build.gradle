@@ -1,11 +1,11 @@
 plugins { id 'com.android.application' }
 android {
   namespace 'com.ibrar.foodshop'
-  compileSdk 34
+  compileSdk 35
   defaultConfig {
     applicationId 'com.ibrar.foodshop'
     minSdk 24
-    targetSdk 34
+    targetSdk 35
     versionCode 2
     versionName '1.1'
   }
