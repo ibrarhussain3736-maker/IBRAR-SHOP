@@ -1,1 +1,26 @@
-{"rules":{"shop":{".read":true,".write":"auth != null && auth.token.email === 'ibrarhussain3736@gmail.com'"}}}
+{
+  "rules": {
+    "shop":   { ".read": true, ".write": "auth != null && auth.token.email === 'ibrarhussain3736@gmail.com'" },
+    "photos": {
+      ".read": true,
+      ".write": "auth != null && auth.token.email === 'ibrarhussain3736@gmail.com'",
+      "$id": { ".validate": "newData.isString() && newData.val().length < 120000" }
+    },
+    "orders": {
+      ".read": "auth != null && auth.token.email === 'ibrarhussain3736@gmail.com'",
+      ".indexOn": ["time"],
+      "$id": {
+        ".write": "(auth != null && auth.token.email === 'ibrarhussain3736@gmail.com') || (!data.exists() && newData.exists())",
+        ".validate": "newData.hasChildren(['id','time','total','name','phone','items','status'])",
+        "status":  { ".read": true, ".validate": "newData.isString() && (newData.val() === 'received' || (auth != null && auth.token.email === 'ibrarhussain3736@gmail.com'))" },
+        "time":    { ".validate": "newData.isNumber()" },
+        "total":   { ".validate": "newData.isNumber()" },
+        "name":    { ".validate": "newData.isString() && newData.val().length < 100" },
+        "phone":   { ".validate": "newData.isString() && newData.val().length < 40" },
+        "address": { ".validate": "newData.isString() && newData.val().length < 300" },
+        "note":    { ".validate": "newData.isString() && newData.val().length < 300" },
+        "txn":     { ".validate": "newData.isString() && newData.val().length < 60" }
+      }
+    }
+  }
+}

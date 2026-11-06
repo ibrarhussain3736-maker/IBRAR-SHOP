@@ -829,7 +829,7 @@ document.addEventListener("click", e => {
   const a = b.dataset.act, id = b.dataset.id, d = b.dataset.d ? parseInt(b.dataset.d, 10) : 0, i = b.dataset.i != null ? parseInt(b.dataset.i, 10) : null;
   if (b.tagName === "INPUT" && b.type !== "checkbox" && b.type !== "radio") return;
   switch (a) {
-    case "close": closeDlg(id); break;
+    case "close": closeDlg(id); if (id === "dDone") { try { window.AndroidAds && window.AndroidAds.interstitial(); } catch {} } break;
     case "cat": ui.cat = id; render(); break;
     case "fav": S.favs = S.favs.includes(id) ? S.favs.filter(x => x !== id) : S.favs.concat(id); save(); render(); break;
     case "open": openItem(id); break;
